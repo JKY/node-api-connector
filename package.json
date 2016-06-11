@@ -1,6 +1,6 @@
 {
   "name": "node-api-connector",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": {
     "urlencode": "*",
     "crypto": "*",
@@ -9,9 +9,10 @@
     "request": "*",
     "moment": "*",
     "colors": "*",
-    "esprima": "*"
+    "esprima": "*",
+    "fsmonitor":"*"
   },
-  "description": "node-api-connector ===",
+  "description": "node-api-connector",
   "main": "index.js",
   "directories": {
     "test": "test"

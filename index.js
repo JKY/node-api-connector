@@ -7,6 +7,7 @@ var color = require('colors'),
     http = require('http'),
     https = require('https'), 
     formidable = require('formidable'),
+    fsmonitor = require('fsmonitor'),
     url = require('url');
 
 var __apis = null;
@@ -29,11 +30,15 @@ var package = {
                     try {
                         var m = JSON.parse(tmp);
                         m['path'] = p;
+                        var path = m['path'] + '/' + m['endpoint']['response']['handler'];
+                        /* inject response handler script */
+                        var tmp = fs.readFileSync(path, { encoding: 'utf8' });
+                        m['linked'] = link(4,tmp);
                         result[m['name']] = m;
+                        console.log('[' + m['name'] + ']' + ' loaded successfully'.green);
                     } catch (e) {
-                        console.log('======= ERROR ========'.red);
-                        console.log('Name:' + name.red);
-                        console.log(e.toString().red);
+                        console.log('[' + m['name'] + ']' + ' loaded failed'.red);
+                        console.log(e);
                     }
                 }
             }
@@ -52,63 +57,67 @@ var __factory = function(opt){
 };
 
 
-var __fn = function(opt) {
-    var content = '';
-    var APIS = __factory(opt);
-    var block = "";
-    var libs = "__init([\n";
-    for (var name in APIS) {
-        var o = APIS[name];
-        var depend = o['endpoint']['response']['depend'];
-        if(depend){
-            depend.forEach( function(d) {
-                libs += INDENT(1,'"' + d['url'] + '",\n');
-            });
-        };
-        var glue = [];
-        glue.push(INDENT(1, '/************************************************************'));
-        glue.push(INDENT(1, ' * name:' + o['name']));
-        glue.push(INDENT(1, ' * ver:' + o['version']));
-        glue.push(INDENT(1, ' * description:' + o['desc']));
-        glue.push(INDENT(1, ' ***********************************************************/'));
+var __fn = function(appid,opt,callback) {
+    opt.api.use(appid,function(err,conf){
+        var content = '';
+        var APIS = __factory(opt);
+        var block = "";
+        var libs = "__init([\n";
+        for (var name in conf) {
+            var o = APIS[name];
+            if(!o){
+                console.log((name + ' not defined in APIS').red);
+                return;
+            };
+            var depend = o['endpoint']['response']['depend'];
+            if(depend){
+                depend.forEach( function(d) {
+                    libs += INDENT(1,'"' + d['url'] + '",\n');
+                });
+            };
+            var glue = [];
+            glue.push(INDENT(1, '/************************************************************'));
+            glue.push(INDENT(1, ' * name:' + o['name']));
+            glue.push(INDENT(1, ' * ver:' + o['version']));
+            glue.push(INDENT(1, ' * description:' + o['desc']));
+            glue.push(INDENT(1, ' ***********************************************************/'));
 
-        /** glue **/
-        var args = [];
-        var endpoint = o['endpoint'];
-        for (var arg in endpoint['param']) {
-            if(!endpoint['param'][arg]['ref'])
-                args.push(arg);
+            /** glue **/
+            var args = [];
+            var endpoint = o['endpoint'];
+            for (var arg in endpoint['param']) {
+                if(!endpoint['param'][arg]['ref'])
+                    args.push(arg);
+            };
+            glue.push(INDENT(1, 'window.mkit.prototype["' + o['name'] + '"] = function(' + args.join(',') + '){'));
+            glue.push(INDENT(2, 'var defer = $.Deferred();'));
+            glue.push(INDENT(2, 'this.__ajax.get("' + '/endpoint/' + name + '",'));
+            glue.push(INDENT(2, '{'));
+            args.forEach(function(a) {
+                glue.push(INDENT(3, '"' + a + '":' + a));
+            });
+            glue.push(INDENT(2, '},function(err,data){'));
+            /* result handler */
+            glue.push(INDENT(3, 'if(err){'));
+            glue.push(INDENT(4, 'console.log(err);'));
+            glue.push(INDENT(4, 'defer.reject(err);'));
+            glue.push(INDENT(3, '}else{'));
+            /* handler */
+            //glue.push(INDENT(3, '__foo_handler(JSON.parse(result));'));
+            /* inject response handler script */
+            glue.push(o['linked']);
+            glue.push(INDENT(3, '};'));
+            glue.push(INDENT(2, '});'));
+            glue.push(INDENT(2, 'return defer.promise();'));
+            glue.push(INDENT(1, '}'));
+            var str = glue.join("\n");
+            block += str;
         };
-        glue.push(INDENT(1, 'window.mkit.prototype["' + o['name'] + '"] = function(' + args.join(',') + '){'));
-        glue.push(INDENT(2, 'var defer = $.Deferred();'));
-        glue.push(INDENT(2, 'this.__ajax.get("' + '/endpoint/' + name + '",'));
-        glue.push(INDENT(2, '{'));
-        args.forEach(function(a) {
-            glue.push(INDENT(3, '"' + a + '":' + a));
-        });
-        glue.push(INDENT(2, '},function(err,data){'));
-        /* result handler */
-        glue.push(INDENT(3, 'if(err){'));
-        glue.push(INDENT(4, 'console.log(err);'));
-        glue.push(INDENT(4, 'defer.reject(err);'));
-        glue.push(INDENT(3, '}else{'));
-        /* handler */
-        //glue.push(INDENT(3, '__foo_handler(JSON.parse(result));'));
-        var path = o['path'] + '/' + endpoint['response']['handler'];
-        /* inject response handler script */
-        var tmp = fs.readFileSync(path, { encoding: 'utf8' });
-        glue.push(link(4,tmp));
-        glue.push(INDENT(3, '};'));
-        glue.push(INDENT(2, '});'));
-        glue.push(INDENT(2, 'return defer.promise();'));
-        glue.push(INDENT(1, '}'));
-        var str = glue.join("\n");
-        block += str;
-    };
-    libs += '],function(){\n';
-    content += libs;
-    content += block + '\n});';
-    return content;
+        libs += '],function(){\n';
+        content += libs;
+        content += block + '\n});';
+        callback(null,content);
+    });
 };
 
 
@@ -236,41 +245,175 @@ var __proxy = function(endpoint,req,resp,context,opt,callback){
 };
 
 
+var __update_conf = function(opt, uid, appid, apiname, conf,fields, files, callback){
+    var tmp = {};
+    var regx = /^(\w+)_(\w+)_(\d+)$/;
+    for(var k in fields){
+        var matches = k.match(regx);
+        if(matches){
+            var name = matches[1];
+            var entry = matches[2];
+            var n = matches[3];
+            if(!tmp[name]){
+                tmp[name] = {};
+            };
+            if(!tmp[name][n]){
+                tmp[name][n] = {};
+            };
+            tmp[name][n][entry] = fields[k];
+        }
+    };
+    for(var name in conf){
+        var c = conf[name];
+        switch (c['type']) {
+            case 'number':
+                conf[name]['value'] = fields[name];
+                break;
+            case 'string':
+                conf[name]['value'] = fields[name];
+                break;
+            case 'file':
+                conf[name]['value'] = '@' + name;
+                break;
+            case 'list':
+                if(tmp[name]){
+                    var template = {};
+                    for(var k in c){
+                        template['type']  = c[k]['type'];
+                        template['desc']  = c[k]['desc'];
+                        template['value'] = '';
+                    };
+                    var f = tmp[name];
+                    c['value'] = [];
+                    for(var n in f){
+                        var v = f[n];
+                        var o = Object.assign({}, template);
+                        for(var name in v){
+                            o[name]['value'] = v[name];
+                        };
+                        c['value'].push(o);
+                    }
+                }
+                break;
+
+        }
+    };
+    callback(null,conf);
+};
 
 
 exports.guard = function(opt){
+    fsmonitor.watch(opt.PACKAGE_HOME, null, function(){
+        /* reload */
+        __apis = package.load(opt.PACKAGE_HOME);
+    });
+    package.load(opt.PACKAGE_HOME);
     /*********************************
-     *
+     * 处理请求
      *********************************/
     this.proxy = function(req,resp,next){
-        if(req['url'] == '/api.js'){
+        var router = {
+            'api': /^\/api.js$/,
+            'fn': /^\/(\w+)\/fn.js[^\/]*$/,
+            'endpoint': /^\/(\w+)\/endpoint\/(\w+)[^\/]*$/,
+            'ls': /^\/api\/list$/,
+            'conf': /^\/(\w+)\/(\w+)\/(\w+)\/conf$/
+        };
+        /* 获取加载的 API 列表 */
+        if(router.ls.test(req['url'])){
+             var APIS = __factory(opt);
+             var result = [];
+             for(var key in APIS){
+                var a = APIS[key];
+                result.push({
+                    name : a['name'],
+                    title: a['title'],
+                    version: a['version'],
+                    desc : a['desc'],
+                    icon: a['icon'],
+                    author: a['author'],
+                    homepage: a['homepage'],
+                    title: a['title'],
+                    cost : a['cost']
+                })
+             };
+             resp.writeHead(200, {
+                             'Content-Type': 'application/javascript',
+                             'Access-Control-Allow-Origin':'*',
+                             'Access-Control-Allow-Credentials':true});
+            return resp.end(JSON.stringify(result,null,4)); 
+        }else if(router.api.test(req['url'])){
+             /* 前端 SHELL */
              fs.readFile(__dirname + '/lib/api.js', {encoding:'utf8'}, function(err,content){
-                 resp.writeHead(200, {
+                resp.writeHead(200, {
                              'Content-Type': 'application/javascript',
                              'Access-Control-Allow-Origin':'*',
                              'Access-Control-Allow-Credentials':true});
                 return resp.end(content); 
              });
-        }else if(req['url'] == '/fn.js'){
-            var content = __fn(opt);
-            resp.writeHead(200, {
-                             'Content-Type': 'application/javascript',
+        }else if(router.fn.test(req['url'])){
+             /* 前端 API */
+             var matches = req['url'].match(router.fn);
+             var appid = matches[1];
+            __fn(appid,opt,function(err,content){
+                resp.writeHead(200, {
+                             'Content-Type': 'text/javascript',
                              'Access-Control-Allow-Origin':'*',
                              'Access-Control-Allow-Credentials':true});
-            return resp.end(content); 
+                return resp.end(content); 
+            });
+        }else if(router.conf.test(req['url'])){
+            /* 配置 */
+             var matches = req['url'].match(router.conf);
+             var uid = matches[1];
+             var appid = matches[2];
+             var apiname = matches[3];
+             var MAP = __factory(opt);
+             if(MAP[apiname]){
+                    var conf = MAP[apiname]['endpoint']['app']['conf'];
+                    /* get */
+                    if(req['method'].toLowerCase() == 'get'){
+                        resp.writeHead(200, {
+                             'Content-Type': 'text/javascript',
+                             'Access-Control-Allow-Origin':'*',
+                             'Access-Control-Allow-Credentials':true});
+                        return resp.end(JSON.stringify(conf)); 
+                    }else if(req['method'].toLowerCase() == 'post'){
+                        /* set*/
+                         __form(req,resp,function(fileds,files){
+                             __update_conf(opt, uid, appid, apiname, conf,fileds,files,function(err,result){
+                                    resp.writeHead(200, {
+                                         'Content-Type': 'text/javascript',
+                                         'Access-Control-Allow-Origin':'*',
+                                         'Access-Control-Allow-Credentials':true});
+                                    return resp.end(JSON.stringify(result));
+                             });
+                         });
+                    }
+             }else{
+                    console.log(('endpoint undefined:' + apiname).red);
+                    resp.writeHead(404, {
+                         'Content-Type': 'text/javascript',
+                         'Access-Control-Allow-Origin':'*',
+                         'Access-Control-Allow-Credentials':true});
+                    return resp.end(JSON.stringify({
+                        err:'endpoint not found'
+                    })); 
+             }
         }else{
-            var matches = req['url'].match(/^\/(\w+)\/endpoint\/(\w+)[^\/]*$/);
+            /* endpoints */
+            var matches = req['url'].match(router.endpoint);
             if(matches){
                 var appid = matches[1];
                 var name = matches[2];
-                var MAP = __factory();
+                var MAP = __factory(opt);
                 if(MAP[name]){
                     var context = {
                         appid:appid
                     };
                     __proxy(MAP[name],req,resp,context,opt,function(err,code,body){
                         resp.writeHead(code, {
-                         'Content-Type': 'application/javascript',
+                         'Content-Type': 'text/javascript',
                          'Access-Control-Allow-Origin':'*',
                          'Access-Control-Allow-Credentials':true});
                         return resp.end(body); 
@@ -278,7 +421,7 @@ exports.guard = function(opt){
                 }else{
                     console.log(('endpoint undefined:' + name).red);
                     resp.writeHead(404, {
-                         'Content-Type': 'application/javascript',
+                         'Content-Type': 'text/javascript',
                          'Access-Control-Allow-Origin':'*',
                          'Access-Control-Allow-Credentials':true});
                     return resp.end(JSON.stringify({

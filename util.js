@@ -1,5 +1,5 @@
 var opt = {
-    INDENT: '    ',
+    INDENT: '   ',
     pretty: true,
 };
 

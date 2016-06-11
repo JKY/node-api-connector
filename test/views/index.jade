@@ -8,9 +8,8 @@ html
 		script(src="/api.js")
 	body
 		script.
-			mkit.ready(function(){
-				var m = new window.mkit('1234');
-				m.foo('www.baidu.com').then(function(r){
+			mkit.ready('1234',function(api){
+				api.wechat_conf('http://localhost:8000/').then(function(r){
 					console.log(r);
 				});
 			});

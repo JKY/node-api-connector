@@ -83,14 +83,16 @@ var T = {
 				console.log('UNKNOWN TYPE IN ArrayExpression:' + type.red);
 				return;
 			};
-			tmp.push(T[type](indent+1,el));
+			tmp.push(INDENT(indent+1,T[type](indent+1,el)));
 		});
-		return INDENT(indent,'[\n' + tmp.join(',\n') + '\n]');
+		return '[\n' + tmp.join(',\n') + '\n' + INDENT(indent,']');
 	},
 
 
 	BinaryExpression: function(indent,node){
-		return node['left']['name'] + ' ' + node['operator'] + ' ' +node['right']['raw']
+		var left = node['left'];
+		var right = node['right'];
+		return T[left['type']](0,left) + ' ' + node['operator'] + ' ' + T[right['type']](0,right);
 	},
 
 
@@ -117,11 +119,11 @@ var T = {
 
 	ObjectExpression: function(indent,node){
 		var tmp = [];
-		tmp.push(INDENT(indent,"{"));
+		tmp.push(INDENT(0,"{"));
 		node['properties'].forEach( function(el) {
 			var name = el['key']['name'];
 			var value = T[el['value']['type']](indent+1,el['value']);
-			tmp.push(INDENT(indent+1,name + ':' + value))
+			tmp.push(INDENT(indent+1,name + ':' + value + ','))
 		});
 		tmp.push(INDENT(indent,"}"));
 		return tmp.join('\n');
@@ -136,7 +138,7 @@ var T = {
 			}else{
 				if(o['type'] == 'MemberExpression'){
 					__object(s,o['object']);
-					s.push(o['property']['name']);
+					s.push(o['property']['name'] || o['property']['value']);
 					return s;
 				}
 			}
@@ -150,7 +152,7 @@ var T = {
 		var line = T['MemberExpression'](0,callee);
 		var tmp = [];
 		node['arguments'].forEach( function(a) {
-			tmp.push(T[a['type']](0,a));
+			tmp.push(T[a['type']](indent,a));
 		});
 		line += '(' + tmp.join(', ') + ');';
 		return INDENT(indent,line);
@@ -168,16 +170,16 @@ var T = {
 	
 	FunctionExpression: function(indent,node){
 		var params = [];
-		var blocks = '';
+		var blocks = [];
 		node['params'].forEach( function(p) {
 			params.push(p['name']);
 		});
 		node['body']['body'].forEach( function(b) {
-			 blocks += T[b['type']](indent+1,b);
+			 blocks.push(INDENT(indent+1,T[b['type']](0,b)));
 		});
 		var tmp = [];
 		tmp.push('function(' + params.join(',') +'){');
-		tmp.push(blocks);
+		tmp.push(blocks.join('\n'));
 		tmp.push(INDENT(indent,'}'));
 		return tmp.join('\n'); 
 	},
@@ -340,6 +342,8 @@ var link = exports.link = function(indent,str){
 
 
 /* test */
-//var str = fs.readFileSync(__dirname + '/../package/foo/process.js', {encoding:'utf8'});
-//var content = link(str);
-//console.log(content);
+/*
+var str = fs.readFileSync(__dirname + '/test/package/foo/process.js', {encoding:'utf8'});
+var content = link(0,str);
+console.log(content.yellow);
+*/

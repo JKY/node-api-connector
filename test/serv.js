@@ -18,6 +18,16 @@ app.locals.pretty = true;
 
 var g = new guard({
 	PACKAGE_HOME: __dirname + '/package',
+	/* api 配置 */
+	api: {
+		use: function(appid,callback){
+			callback(null,{
+				'wechat_conf': {
+
+				 }
+			});
+		}
+	},
 	/* 获取配置 */
 	get_conf:function(config,context,callback){
 		config['appid'] = 'wx50d746e9d0f0af1d';
