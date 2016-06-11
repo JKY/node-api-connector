@@ -37,6 +37,15 @@ usage
      		根据 appid 获取 enabled 的 api 
      * get_conf: 
             获取通用设置
+
+
+ URL
+ ===
+ * /api.js 
+ * /{appid}/fn.js
+ * /{appid}/endpoint/{wechat_conf}
+ * /api/list 
+ * /{uid}/{appid}/{wechat_conf}/conf
 	
 
 
