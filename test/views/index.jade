@@ -1,0 +1,16 @@
+html
+	head
+		title  
+		meta(name="viewport" content="minimal-ui,width=device-width, initial-scale=1,maximum-scale=1")
+		meta(name="apple-mobile-web-app-capable" content="yes")
+		meta(name="apple-mobile-web-app-status-bar-style",content="black-translucent")
+		meta(name="format-detection" content="telephone=no")
+		script(src="/api.js")
+	body
+		script.
+			mkit.ready(function(){
+				var m = new window.mkit('1234');
+				m.foo('www.baidu.com').then(function(r){
+					console.log(r);
+				});
+			});

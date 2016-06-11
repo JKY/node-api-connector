@@ -1,0 +1,28 @@
+{
+    "name":"foo",
+    "version": "1.0.0",
+    "desc":"foo api demo",
+    "cost":0,
+    "endpoint": {
+        "method":"get",
+        "url":"http://wxapi.postio.me/js/config",
+        "data":{
+
+         },
+        "param": {
+            "appid":{
+                "type":"string",
+                "ref" : "user.wx.appid"
+             },
+            "u": {
+                "type":"string"
+             }
+        },
+        "response": {
+            "depend" :[
+                
+             ],
+            "handler": "process.js"
+         }
+    }
+}
