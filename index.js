@@ -37,7 +37,7 @@ var package = {
                         result[m['name']] = m;
                         console.log('[' + m['name'] + ']' + ' loaded successfully'.green);
                     } catch (e) {
-                        console.log('[' + m['name'] + ']' + ' loaded failed'.red);
+                        console.log(manifest + ' not found'.red);
                         console.log(e);
                     }
                 }
@@ -212,7 +212,7 @@ var __proxy = function(endpoint,req,resp,context,opt,callback){
             config[key] = arg['ref']
         }
     };
-    opt.get_conf(config,context,function(err,result){
+    opt.common_conf(context.appid, config,function(err,result){
         var method = req['method'];
         var data = {};
         for(var name in result){
@@ -317,7 +317,9 @@ exports.guard = function(opt){
             'fn': /^\/(\w+)\/fn.js[^\/]*$/,
             'endpoint': /^\/(\w+)\/endpoint\/(\w+)[^\/]*$/,
             'ls': /^\/api\/list$/,
-            'conf': /^\/(\w+)\/(\w+)\/(\w+)\/conf$/
+            'conf': /^\/(\w+)\/(\w+)\/(\w+)\/conf$/,
+            'detail': /^\/api\/(\w+)$/,
+            'doc': /^\/api\/(\w+)\/doc$/,
         };
         /* 获取加载的 API 列表 */
         if(router.ls.test(req['url'])){
@@ -351,6 +353,57 @@ exports.guard = function(opt){
                              'Access-Control-Allow-Credentials':true});
                 return resp.end(content); 
              });
+        }else if(router.detail.test(req['url'])){
+             /* 获取 API 详情 */
+             var APIS = __factory(opt);
+             var matches = req['url'].match(router.detail);
+             var apiname = matches[1];
+             if(APIS[apiname]){
+                var item = APIS[apiname];
+                var result = {
+                    name : item['name'],
+                    title: item['title'],
+                    version: item['version'],
+                    desc : item['desc'],
+                    cost : item['cost'],
+                    icon : item['icon'],
+                    conf : item['endpoint']['app']['conf']
+                };
+                resp.writeHead(200, {
+                             'Content-Type': 'application/javascript',
+                             'Access-Control-Allow-Origin':'*',
+                             'Access-Control-Allow-Credentials':true});
+                return resp.end(JSON.stringify({
+                    'err':null,
+                    'result': result
+                },null,4)); 
+             }else{
+                resp.writeHead(404, {
+                             'Content-Type': 'application/javascript',
+                             'Access-Control-Allow-Origin':'*',
+                             'Access-Control-Allow-Credentials':true});
+                return resp.end(JSON.stringify({'err':'not found'},null,4)); 
+             };
+        }else if(router.doc.test(req['url'])){ 
+             var APIS = __factory(opt);
+             var matches = req['url'].match(router.doc);
+             var apiname = matches[1];
+             if(APIS[apiname]){
+                var item = APIS[apiname];
+                fs.readFile(item.path + '/doc.md', {encoding:'utf8'}, function(err,content){
+                    resp.writeHead(err == null ? 200 : 500, {
+                             'Content-Type': 'application/javascript',
+                             'Access-Control-Allow-Origin':'*',
+                             'Access-Control-Allow-Credentials':true});
+                    return resp.end(content); 
+                });
+             }else{
+                resp.writeHead(404, {
+                             'Content-Type': 'application/javascript',
+                             'Access-Control-Allow-Origin':'*',
+                             'Access-Control-Allow-Credentials':true});
+                return resp.end(JSON.stringify({'err':'not found'},null,4)); 
+             };
         }else if(router.fn.test(req['url'])){
              /* 前端 API */
              var matches = req['url'].match(router.fn);

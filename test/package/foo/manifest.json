@@ -17,7 +17,7 @@
                 "tab": {
                     "type" : "list",
                     "entry": {
-                        "A": { "type": "number", "desc": "描述"},
+                        "A": { "type": "number", "desc": "描述1"},
                         "B": { "type": "string", "desc": "描述"}
                      }
                  }
@@ -45,6 +45,6 @@
          },
         "data":{
 
-         },
+         }
     }
 }

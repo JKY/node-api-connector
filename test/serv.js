@@ -2,11 +2,11 @@
  * Module dependencies.
  */
 var express = require('express'),
-	conf = require('./conf').conf,
-	color = require('colors'),
-	util = require('./lib/util'),
-	guard = require('../').guard,
-	fs = require('fs');
+    conf = require('./conf').conf,
+    color = require('colors'),
+    util = require('./lib/util'),
+    guard = require('../').guard,
+    fs = require('fs');
 /*****************
 
  *****************/
@@ -17,22 +17,25 @@ app.locals.pretty = true;
 //app.use(minify());
 
 var g = new guard({
-	PACKAGE_HOME: __dirname + '/package',
-	/* api 配置 */
-	api: {
-		use: function(appid,callback){
-			callback(null,{
-				'wechat_conf': {
-
-				 }
-			});
-		}
-	},
-	/* 获取配置 */
-	get_conf:function(config,context,callback){
-		config['appid'] = 'wx50d746e9d0f0af1d';
-		callback(null,config);
-	}
+    PACKAGE_HOME: __dirname + '/package',
+    /* api 配置 */
+    api: {
+        use: function(appid, callback) {
+            callback(null, {
+                'wechat_conf': { }
+            });
+        }
+    },
+    /* 获取通用配置 */
+    common_conf: function(appid, config, callback) {
+        var key = config['appid']; // 'wx.appid'
+        config['appid'] = 'wx50d746e9d0f0af1d';
+        callback(null, config);
+    },
+    /* 保存API返回数据*/
+    data: function(appid,apiname,data,callback){
+        callback(null);
+    }
 });
 app.use(g.proxy);
 
@@ -42,13 +45,12 @@ var vhome = __dirname + '/views';
 app.use(express.static(vhome));
 app.set('views', [vhome]);
 /* views config */
-app.get('/',function(req,resp){
-	resp.render('index.jade');
+app.get('/', function(req, resp) {
+    resp.render('index.jade');
 });
 
 
 if (!module.parent) {
-  	app.listen(conf.port);
-  	console.log(conf['appname'] + ' runnng port:' + conf.port);
+    app.listen(conf.port);
+    console.log(conf['appname'] + ' runnng port:' + conf.port);
 }
-
