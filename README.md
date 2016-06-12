@@ -40,12 +40,11 @@ usage
 
 
 
-
 endpoints 
 ===
 
-** 前端页面的 js 库 **
-===
+- ** 前端页面的 js 库 **
+
 endpoint: /api.js 
 method: GET
 验证: none
@@ -59,8 +58,8 @@ method: GET
 
 
 
-** 前端js库加载的函数库  **
-===
+- ** 前端js库加载的函数库  **
+
 endpoint: /{appid}/fn.js
 method: GET
 验证: none
@@ -74,8 +73,8 @@ method: GET
 
 
 
-** 前端页面函数库掉用的接口地址   **
-===
+- ** 前端页面函数库掉用的接口地址   **
+
 endpoint: /{appid}/endpoint/{wechat_conf}
 method: GET
 验证: none
@@ -90,8 +89,8 @@ method: GET
 
 
 
-**  获取所有已公开的API列表   **
-===
+- **  获取所有已公开的API列表   **
+
 endpoint: /api/list
 验证: none
 参数: 
@@ -104,8 +103,8 @@ endpoint: /api/list
 
 
 
-**  获取某个 API 详情  **
-===
+- **  获取某个 API 详情  **
+
 endpoint:  /api/{apiname}
 验证: none
 参数: 
@@ -117,8 +116,8 @@ endpoint:  /api/{apiname}
 
 
 
-**  获取某个 API markdown doc  **
-===
+- **  获取某个 API markdown doc  **
+
 endpoint:  /api/{apiname}/doc
 验证: none
 参数: 
