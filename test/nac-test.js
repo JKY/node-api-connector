@@ -2,9 +2,7 @@
  * Module dependencies.
  */
 var express = require('express'),
-    conf = require('./conf').conf,
     color = require('colors'),
-    util = require('./lib/util'),
     guard = require('../').guard,
     fs = require('fs');
 /*****************
@@ -40,17 +38,6 @@ var g = new guard({
 app.use(g.proxy);
 
 
-
-var vhome = __dirname + '/views';
-app.use(express.static(vhome));
-app.set('views', [vhome]);
-/* views config */
-app.get('/', function(req, resp) {
-    resp.render('index.jade');
-});
-
-
 if (!module.parent) {
-    app.listen(conf.port);
-    console.log(conf['appname'] + ' runnng port:' + conf.port);
+    app.listen(8000);
 }

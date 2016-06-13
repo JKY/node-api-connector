@@ -32,6 +32,9 @@
              },
             "u": {
                 "type":"string"
+             },
+            "api_list": {
+                "type":"string"
              }
         },
         "response": {

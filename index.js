@@ -94,7 +94,7 @@ var __fn = function(appid,opt,callback) {
             glue.push(INDENT(2, 'this.__ajax.get("' + '/endpoint/' + name + '",'));
             glue.push(INDENT(2, '{'));
             args.forEach(function(a) {
-                glue.push(INDENT(3, '"' + a + '":' + a));
+                glue.push(INDENT(3, '"' + a + '":' + a + ','));
             });
             glue.push(INDENT(2, '},function(err,data){'));
             /* result handler */
@@ -302,6 +302,14 @@ var __update_conf = function(opt, uid, appid, apiname, conf,fields, files, callb
 };
 
 
+var __output = function(resp,code,content,type){
+    resp.writeHead(code, {
+                     'Content-Type': type || 'application/javascript',
+                     'Access-Control-Allow-Origin':'*',
+                     'Access-Control-Allow-Credentials':true});
+    return resp.end(content);
+};
+
 exports.guard = function(opt){
     fsmonitor.watch(opt.PACKAGE_HOME, null, function(){
         /* reload */
@@ -320,6 +328,7 @@ exports.guard = function(opt){
             'conf': /^\/(\w+)\/(\w+)\/(\w+)\/conf$/,
             'detail': /^\/api\/(\w+)$/,
             'doc': /^\/api\/(\w+)\/doc$/,
+            'tests': /^\/api\/tests\/(\w+)$/,
         };
         /* 获取加载的 API 列表 */
         if(router.ls.test(req['url'])){
@@ -339,19 +348,11 @@ exports.guard = function(opt){
                     cost : a['cost']
                 })
              };
-             resp.writeHead(200, {
-                             'Content-Type': 'application/javascript',
-                             'Access-Control-Allow-Origin':'*',
-                             'Access-Control-Allow-Credentials':true});
-            return resp.end(JSON.stringify(result,null,4)); 
+             __output(resp,200,JSON.stringify(result,null,4));
         }else if(router.api.test(req['url'])){
              /* 前端 SHELL */
              fs.readFile(__dirname + '/lib/api.js', {encoding:'utf8'}, function(err,content){
-                resp.writeHead(200, {
-                             'Content-Type': 'application/javascript',
-                             'Access-Control-Allow-Origin':'*',
-                             'Access-Control-Allow-Credentials':true});
-                return resp.end(content); 
+                 __output(resp,200,content);
              });
         }else if(router.detail.test(req['url'])){
              /* 获取 API 详情 */
@@ -369,20 +370,12 @@ exports.guard = function(opt){
                     icon : item['icon'],
                     conf : item['endpoint']['app']['conf']
                 };
-                resp.writeHead(200, {
-                             'Content-Type': 'application/javascript',
-                             'Access-Control-Allow-Origin':'*',
-                             'Access-Control-Allow-Credentials':true});
-                return resp.end(JSON.stringify({
+                __output(resp,200,content,JSON.stringify({
                     'err':null,
                     'result': result
                 },null,4)); 
              }else{
-                resp.writeHead(404, {
-                             'Content-Type': 'application/javascript',
-                             'Access-Control-Allow-Origin':'*',
-                             'Access-Control-Allow-Credentials':true});
-                return resp.end(JSON.stringify({'err':'not found'},null,4)); 
+                __output(resp,404,JSON.stringify({'err':'not found'},null,4));
              };
         }else if(router.doc.test(req['url'])){ 
              var APIS = __factory(opt);
@@ -391,30 +384,31 @@ exports.guard = function(opt){
              if(APIS[apiname]){
                 var item = APIS[apiname];
                 fs.readFile(item.path + '/doc.md', {encoding:'utf8'}, function(err,content){
-                    resp.writeHead(err == null ? 200 : 500, {
-                             'Content-Type': 'application/javascript',
-                             'Access-Control-Allow-Origin':'*',
-                             'Access-Control-Allow-Credentials':true});
-                    return resp.end(content); 
+                    __output(resp,err == null ? 200 : 500,content);
                 });
              }else{
-                resp.writeHead(404, {
-                             'Content-Type': 'application/javascript',
-                             'Access-Control-Allow-Origin':'*',
-                             'Access-Control-Allow-Credentials':true});
-                return resp.end(JSON.stringify({'err':'not found'},null,4)); 
+                __output(resp,404,JSON.stringify({'err':'not found'},null,4));
              };
         }else if(router.fn.test(req['url'])){
              /* 前端 API */
              var matches = req['url'].match(router.fn);
              var appid = matches[1];
             __fn(appid,opt,function(err,content){
-                resp.writeHead(200, {
-                             'Content-Type': 'text/javascript',
-                             'Access-Control-Allow-Origin':'*',
-                             'Access-Control-Allow-Credentials':true});
-                return resp.end(content); 
+                __output(resp,200,content);
             });
+        }else if(router.tests.test(req['url'])){
+             console.log('----------')
+             var APIS = __factory(opt);
+             var matches = req['url'].match(router.tests);
+             var name = matches[1];
+             var tmp = APIS[name];
+             if(!tmp){
+                __output(resp,404,"");
+             }else{
+                fs.readFile(tmp['path'] + '/tests/index.html', {encoding:'utf8'}, function(err,html){
+                    __output(resp,err==null?200:404,html||err,'text/html');
+                })
+             }
         }else if(router.conf.test(req['url'])){
             /* 配置 */
              var matches = req['url'].match(router.conf);
@@ -425,33 +419,21 @@ exports.guard = function(opt){
              if(MAP[apiname]){
                     var conf = MAP[apiname]['endpoint']['app']['conf'];
                     /* get */
-                    if(req['method'].toLowerCase() == 'get'){
-                        resp.writeHead(200, {
-                             'Content-Type': 'text/javascript',
-                             'Access-Control-Allow-Origin':'*',
-                             'Access-Control-Allow-Credentials':true});
-                        return resp.end(JSON.stringify(conf)); 
+                    if(req['method'].toLowerCase() == 'get'){ 
+                        __output(resp,200,JSON.stringify(conf));
                     }else if(req['method'].toLowerCase() == 'post'){
                         /* set*/
                          __form(req,resp,function(fileds,files){
                              __update_conf(opt, uid, appid, apiname, conf,fileds,files,function(err,result){
-                                    resp.writeHead(200, {
-                                         'Content-Type': 'text/javascript',
-                                         'Access-Control-Allow-Origin':'*',
-                                         'Access-Control-Allow-Credentials':true});
-                                    return resp.end(JSON.stringify(result));
+                                    __output(resp,200,JSON.stringify(result));
                              });
                          });
                     }
              }else{
                     console.log(('endpoint undefined:' + apiname).red);
-                    resp.writeHead(404, {
-                         'Content-Type': 'text/javascript',
-                         'Access-Control-Allow-Origin':'*',
-                         'Access-Control-Allow-Credentials':true});
-                    return resp.end(JSON.stringify({
+                    _output(resp,200,JSON.stringify({
                         err:'endpoint not found'
-                    })); 
+                    }));
              }
         }else{
             /* endpoints */
@@ -465,19 +447,11 @@ exports.guard = function(opt){
                         appid:appid
                     };
                     __proxy(MAP[name],req,resp,context,opt,function(err,code,body){
-                        resp.writeHead(code, {
-                         'Content-Type': 'text/javascript',
-                         'Access-Control-Allow-Origin':'*',
-                         'Access-Control-Allow-Credentials':true});
-                        return resp.end(body); 
+                        __output(resp,200,body); 
                     });
                 }else{
                     console.log(('endpoint undefined:' + name).red);
-                    resp.writeHead(404, {
-                         'Content-Type': 'text/javascript',
-                         'Access-Control-Allow-Origin':'*',
-                         'Access-Control-Allow-Credentials':true});
-                    return resp.end(JSON.stringify({
+                     __output(resp,404,JSON.stringify({
                         err:'endpoint not found'
                     })); 
                 }
