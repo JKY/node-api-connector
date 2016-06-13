@@ -311,7 +311,7 @@ exports.guard = function(opt){
             'conf': /^\/(\w+)\/(\w+)\/(\w+)\/conf$/,
             'detail': /^\/api\/(\w+)$/,
             'doc': /^\/api\/(\w+)\/doc$/,
-            'tests': /^\/api\/tests\/(\w+)$/,
+            'tests': /^\/api\/tests\/(\w+)(\?(.*))?/,
         };
         /* 获取加载的 API 列表 */
         if(router.ls.test(req['url'])){

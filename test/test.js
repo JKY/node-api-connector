@@ -14,24 +14,28 @@ app.enable('trust proxy');
 app.locals.pretty = true;
 //app.use(minify());
 
-
-
 var g = new guard({
     PACKAGE_HOME: __dirname + '/package',
     /* api 配置 */
     api: {
         use: function(appid, callback) {
             callback(null, {
-                'wechat_conf': { },
-                'wechat_oauth': { },
-                'wechat_pay':{ }
+                'wechat_conf': {
+
+                 },
+                'wechat_oauth': {
+
+                 },
+                'wechat_pay':{
+
+                 }
             });
         }
     },
     /* 获取通用配置 */
     common_conf: function(appid, config, callback) {
         var key = config['appid']; // 'wx.appid'
-        config['appid'] = 'wx50d746e9d0f0af1d';
+        config['appid'] = 'wx22fb445469f289a2';
         callback(null, config);
     },
     /* 保存API返回数据*/

@@ -9,9 +9,11 @@ var handler = function(scope) {
             defer.resolve(param);
         }, 500);
     }else{
+        var tmp = window.location.href.replace('http://','');
+        tmp = tmp.replace('https://','');
         this.__ajax.get("/endpoint/wechat_oauth", {
             "scope": scope,
-            "callback": window.location.href,
+            "callback": tmp,
         }, function(err, data) {
             if (err) {
                 console.log(err);
