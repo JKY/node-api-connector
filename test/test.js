@@ -4,11 +4,13 @@
 var express = require('express'),
     color = require('colors'),
     guard = require('../').guard,
+    favicon = require('express-favicon'),
     fs = require('fs');
 /*****************
 
  *****************/
 var app = module.exports = express();
+app.use(favicon(__dirname + '/logo.png'));
 var minify = require('express-minify');
 app.enable('trust proxy');
 app.locals.pretty = true;

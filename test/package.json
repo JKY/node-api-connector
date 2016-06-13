@@ -6,6 +6,7 @@
     "crypto": "*",
     "esprima": "^2.7.2",
     "express": "^4.10",
+    "express-favicon": "^1.0.1",
     "express-minify": "*",
     "express-rate-limit": "*",
     "formidable": "*",
