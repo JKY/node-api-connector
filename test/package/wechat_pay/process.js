@@ -6,6 +6,7 @@ var handler = function(amount,openid,desc) {
         "openid": openid,
         "desc": desc,
     }, function(err, data) {
+        console.log(data);
         if (err) {
             console.log(err);
             defer.reject(err);

@@ -195,7 +195,7 @@ var __proxy = function(endpoint,req,resp,context,opt,callback){
             config[key] = arg['ref']
         }
     };
-    opt.common_conf(context.appid, config,function(err,result){
+    opt.api.conf.get(context.appid, config,function(err,result){
         var method = req['method'];
         var data = {};
         for(var name in result){
@@ -429,6 +429,8 @@ exports.guard = function(opt){
                         appid:appid
                     };
                     __proxy(MAP[name],req,resp,context,opt,function(err,code,body){
+                        console.log('====== response =====');
+                        console.log(body);
                         __output(resp,200,body); 
                     });
                 }else{

@@ -7,7 +7,7 @@ var handler = function(api) {
     }, function(err, data) {
         var result = data['result'];
         var opt = {
-            debug: false,
+            debug: true,
             appId: result.appid,
             timestamp: result.timestamp,
             nonceStr: result.noncestr,
@@ -22,8 +22,6 @@ var handler = function(api) {
             defer.reject(res);
         });
         wx.config(opt);
-        console.log(data);
-        alert('success');
     });
     return defer.promise();
 }

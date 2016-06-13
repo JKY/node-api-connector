@@ -30,14 +30,17 @@ var g = new guard({
 
                  }
             });
+        },
+
+        conf: {
+            get: function(appid, config, callback) {
+                var key = config['appid']; // 'wx.appid'
+                config['appid'] = 'wx50d746e9d0f0af1d';//'wx22fb445469f289a2';
+                callback(null, config);
+            }
         }
     },
-    /* 获取通用配置 */
-    common_conf: function(appid, config, callback) {
-        var key = config['appid']; // 'wx.appid'
-        config['appid'] = 'wx22fb445469f289a2';
-        callback(null, config);
-    },
+
     /* 保存API返回数据*/
     data: function(appid,apiname,data,callback){
         callback(null);
