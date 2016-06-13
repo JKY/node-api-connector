@@ -14,6 +14,8 @@ app.enable('trust proxy');
 app.locals.pretty = true;
 //app.use(minify());
 
+
+
 var g = new guard({
     PACKAGE_HOME: __dirname + '/package',
     /* api 配置 */
