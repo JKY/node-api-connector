@@ -1,0 +1,41 @@
+{
+    "name":"wechat_pay",
+    "version": "1.0.0",
+    "title": "微信支付",
+    "desc":"使用微信支付",
+    "icon": "",
+    "author": "",
+    "homepage": "",
+    "cost":0,
+    "endpoint": {
+        "app":{
+            "conf": {}
+         },
+        "method":"get",
+        "url":"http://wx.postio.me/pay/prepay",
+        "param": {
+            "appid":{
+                "type":"string",
+                "ref" : "user.wx.appid"
+             },
+            "amount": {
+                "type":"number"
+             },
+            "openid": {
+                "type":"string"
+             },
+            "desc": {
+                "type":"string"
+             }
+        },
+        "response": {
+            "depend" :[
+                
+             ],
+            "handler": "process.js"
+         },
+        "data":{
+
+         }
+    }
+}

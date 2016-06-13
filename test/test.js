@@ -22,7 +22,9 @@ var g = new guard({
     api: {
         use: function(appid, callback) {
             callback(null, {
-                'wechat_conf': { }
+                'wechat_conf': { },
+                'wechat_oauth': { },
+                'wechat_pay':{ }
             });
         }
     },

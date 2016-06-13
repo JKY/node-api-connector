@@ -24,16 +24,13 @@
              }
          },
         "method":"get",
-        "url":"http://wxapi.postio.me/js/config",
+        "url":"http://wx.postio.me/js/config",
         "param": {
             "appid":{
                 "type":"string",
                 "ref" : "user.wx.appid"
              },
-            "u": {
-                "type":"string"
-             },
-            "api_list": {
+            "api": {
                 "type":"string"
              }
         },

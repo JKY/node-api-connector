@@ -1,0 +1,38 @@
+{
+    "name":"wechat_oauth",
+    "version": "1.0.0",
+    "title": "微信授权",
+    "desc":"获取微信用户信息",
+    "icon": "",
+    "author": "",
+    "homepage": "",
+    "cost":0,
+    "endpoint": {
+        "app":{
+            "conf": {}
+         },
+        "method":"get",
+        "url":"http://wx.postio.me/oauth",
+        "param": {
+            "appid":{
+                "type":"string",
+                "ref" : "user.wx.appid"
+             },
+            "scope": {
+                "type":"string"
+             },
+            "callback": {
+                "type":"string"
+             }
+        },
+        "response": {
+            "depend" :[
+                
+             ],
+            "handler": "process.js"
+         },
+        "data":{
+
+         }
+    }
+}

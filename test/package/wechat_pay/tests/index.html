@@ -10,7 +10,7 @@
   <body>
     <script>
       mkit.ready('1234',function(api){
-      	api.wechat_conf(['onMenuShareTimeline','onMenuShareAppMessage','chooseWXPay']).then(function(r){
+      	api.wechat_conf('http://localhost:8000/',['a','b']).then(function(r){
       		console.log(r);
       	});
       });

@@ -33,7 +33,7 @@ var package = {
                         var path = m['path'] + '/' + m['endpoint']['response']['handler'];
                         /* inject response handler script */
                         var tmp = fs.readFileSync(path, { encoding: 'utf8' });
-                        m['linked'] = link(4,tmp);
+                        m['linked'] = link(3,tmp);
                         result[m['name']] = m;
                         console.log('[' + m['name'] + ']' + ' loaded successfully'.green);
                     } catch (e) {
@@ -75,7 +75,7 @@ var __fn = function(appid,opt,callback) {
                     libs += INDENT(1,'"' + d['url'] + '",\n');
                 });
             };
-            var glue = [];
+            var glue = ['\n'];
             glue.push(INDENT(1, '/************************************************************'));
             glue.push(INDENT(1, ' * name:' + o['name']));
             glue.push(INDENT(1, ' * ver:' + o['version']));
@@ -90,32 +90,14 @@ var __fn = function(appid,opt,callback) {
                     args.push(arg);
             };
             glue.push(INDENT(1, 'window.mkit.prototype["' + o['name'] + '"] = function(' + args.join(',') + '){'));
-            glue.push(INDENT(2, 'var defer = $.Deferred();'));
-            glue.push(INDENT(2, 'this.__ajax.get("' + '/endpoint/' + name + '",'));
-            glue.push(INDENT(2, '{'));
-            args.forEach(function(a) {
-                glue.push(INDENT(3, '"' + a + '":' + a + ','));
-            });
-            glue.push(INDENT(2, '},function(err,data){'));
-            /* result handler */
-            glue.push(INDENT(3, 'if(err){'));
-            glue.push(INDENT(4, 'console.log(err);'));
-            glue.push(INDENT(4, 'defer.reject(err);'));
-            glue.push(INDENT(3, '}else{'));
-            /* handler */
-            //glue.push(INDENT(3, '__foo_handler(JSON.parse(result));'));
-            /* inject response handler script */
             glue.push(o['linked']);
-            glue.push(INDENT(3, '};'));
-            glue.push(INDENT(2, '});'));
-            glue.push(INDENT(2, 'return defer.promise();'));
-            glue.push(INDENT(1, '}'));
+            glue.push(INDENT(1, '};'));
             var str = glue.join("\n");
             block += str;
         };
         libs += '],function(){\n';
         content += libs;
-        content += block + '\n});';
+        content += block + '\n});\n';
         callback(null,content);
     });
 };
@@ -205,6 +187,7 @@ var __form = function(req,resp,func){
 
 /* proxy http request */
 var __proxy = function(endpoint,req,resp,context,opt,callback){
+    console.log('proxy:' + req['url'].yellow);
     var config = {};
     for(var key in endpoint['endpoint']['param']){
         var arg = endpoint['endpoint']['param'][key];
@@ -304,7 +287,7 @@ var __update_conf = function(opt, uid, appid, apiname, conf,fields, files, callb
 
 var __output = function(resp,code,content,type){
     resp.writeHead(code, {
-                     'Content-Type': type || 'application/javascript',
+                     'Content-Type': type || 'text/javascript',
                      'Access-Control-Allow-Origin':'*',
                      'Access-Control-Allow-Credentials':true});
     return resp.end(content);
@@ -397,7 +380,6 @@ exports.guard = function(opt){
                 __output(resp,200,content);
             });
         }else if(router.tests.test(req['url'])){
-             console.log('----------')
              var APIS = __factory(opt);
              var matches = req['url'].match(router.tests);
              var name = matches[1];
