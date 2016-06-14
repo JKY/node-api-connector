@@ -35,7 +35,7 @@ var ROUTER =  {
         'handler': null
      },
     'data': {
-        'path': 'data/(\\w+)/(\\w+)(.*)?',
+        'path': 'data/(\\w+)/(\\w+)/(\\w+)(.*)?',
         'handler': null
      }
 
