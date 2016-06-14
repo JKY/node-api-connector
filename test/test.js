@@ -23,9 +23,9 @@ var g = new guard({
         use: function(appid, callback) {
             callback(null, {
                 'store': true,
-                'wechat_conf': true,
-                'wechat_oauth': true,
-                'wechat_pay': true
+                'wx_conf': true,
+                'wx_oauth': true,
+                'wx_pay': true
             });
         },
 
