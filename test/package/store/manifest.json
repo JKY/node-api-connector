@@ -1,0 +1,31 @@
+{
+    "name":"store",
+    "version": "1.0.0",
+    "title": "保存数据",
+    "desc":"保存数据",
+    "icon": "",
+    "author": "",
+    "homepage": "",
+    "cost":0,
+    "endpoint": {
+        "app":{
+            "conf": {}
+         },
+        "method":"get",
+        "url":"http://localhost:8889/save",
+        "param": {
+            "data":{
+                "type":"object"
+             }
+        },
+        "response": {
+            "depend" :[
+                
+             ],
+            "handler": "process.js"
+         },
+        "data":{
+
+         }
+    }
+}

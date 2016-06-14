@@ -22,23 +22,30 @@ var g = new guard({
     api: {
         use: function(appid, callback) {
             callback(null, {
-                'wechat_conf': {
-
-                 },
-                'wechat_oauth': {
-
-                 },
-                'wechat_pay':{
-
-                 }
+                'store': true,
+                'wechat_conf': true,
+                'wechat_oauth': true,
+                'wechat_pay': true
             });
         },
 
         conf: {
             get: function(appid, config, callback) {
-                var key = config['appid']; // 'wx.appid'
-                config['appid'] = 'wx50d746e9d0f0af1d';//'wx22fb445469f289a2';
+                for(var key in config){
+                    if(key == 'appid'){
+                         config['appid'] = 'wx50d746e9d0f0af1d';//'wx22fb445469f289a2';
+                    }
+                }
                 callback(null, config);
+            }
+        },
+
+        data: {
+            save: function(appid, apiname, data,callback){
+                console.log('==== data ====');
+                console.log(appid + ':' + apiname);
+                console.log(data);
+                callback(null,null);
             }
         }
     },
