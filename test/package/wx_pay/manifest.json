@@ -13,6 +13,7 @@
          },
         "method":"get",
         "url":"http://wx.postio.me/pay/prepay",
+        "key":"QW123qw34!2w1",
         "param": {
             "appid":{
                 "type":"string",
@@ -35,7 +36,7 @@
             "handler": "process.js"
          },
         "data":{
-            "key":"QW123qw34!2w1"
+
          }
     }
 }

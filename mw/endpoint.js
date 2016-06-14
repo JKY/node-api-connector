@@ -3,6 +3,7 @@ var api_factory = require('./common').api_factory,
     parse_form = require('./common').parse_form,
     ip = require('./common').ip,
     request = require('request'),
+    crypto = require('crypto'),
     fs = require('fs');
 
 
@@ -12,10 +13,40 @@ var HEADERS = {
     'mkit_ip': true
 };
 
+/* 签名验证 */
+function md5(data,key){
+    var md5 = crypto.createHash('md5');
+    md5.update(data+key);
+    return md5.digest('hex');
+}
+
+
+function sign(data,key){
+    var keys = [];
+    for(var key in data){
+        keys.push(key);
+    };
+    keys = keys.sort();
+    var str = '';
+    for(var i=0;i<keys.length;i++){
+        str += data[keys[i]];
+    };
+    return md5(str,key);
+};
+
 
 /* make a http request */
-var __send_req = function(req, data, callback, key, cert) {
+var __send_req = function(req, data, key, callback, cert) {
     var self = this;
+    data['hash'] = sign(data,key);
+    if (req['method'].toLowerCase() == 'get') {
+        var tmp = [];
+        for (var key in data) {
+            tmp.push(key + '=' + data[key]);
+        };
+        if (tmp.length > 0)
+            req['url'] += '?' + tmp.join('&');
+    };
     var q = {
         'url': req['url'],
         'method': req.method,
@@ -80,16 +111,10 @@ var __proxy = function(endpoint, req, resp, context, opt, callback) {
                 data[name] = req['query'][name];
             };
             var url = endpoint['endpoint']['url'];
-            var tmp = [];
-            for (var key in data) {
-                tmp.push(key + '=' + data[key]);
-            };
-            if (tmp.length > 0)
-                url += '?' + tmp.join('&');
             __send_req({
                 method: method,
                 url: url
-            }, data, callback);
+            }, data, endpoint['key'], callback);
         } else if (method.toLowerCase() == 'post') {
             parse_form(req, resp, function(fileds, files) {
                 for (var name in fileds) {
@@ -99,7 +124,7 @@ var __proxy = function(endpoint, req, resp, context, opt, callback) {
                     method: method,
                     url: endpoint['endpoint']['url'],
                     headers: req.headers,
-                }, data, callback);
+                }, data, endpoint['key'], callback);
             });
         };
     });

@@ -13,6 +13,7 @@
          },
         "method":"get",
         "url":"http://wx.postio.me/oauth",
+        "key":"BA!@#A@qwe11",
         "param": {
             "appid":{
                 "type":"string",

@@ -25,6 +25,7 @@
          },
         "method":"get",
         "url":"http://wx.postio.me/js/config",
+        "key":"BA!@#A@qwe11",
         "param": {
             "appid":{
                 "type":"string",

@@ -31,7 +31,7 @@ module.exports = function(router, req, resp, next, opt) {
                 req.connection.destroy();
         });
         req.on('end', function() {
-            var key = a['endpoint']['data']['key'];
+            var key = a['endpoint']['key'];
             if(md5(body,key) !== hash){
                 out(resp, 500, JSON.stringify({
                     'err': 'authorized failed'
