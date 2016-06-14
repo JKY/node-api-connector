@@ -151,7 +151,8 @@ module.exports = function(router, req, resp, next, opt) {
                     //console.log('########'.yellow);
                     out(resp, 200, body);
                     if(opt.api.called){
-                        opt.api.called(appid,name,IP,req['heads']['Referer']);
+                        console.log(req['headers']);
+                        opt.api.called(appid,name,IP,req['headers']['Referer']);
                     };
                 }else{
                     out(resp, 500, 'internal error');
