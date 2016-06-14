@@ -1,5 +1,5 @@
 {
-    "name":"wechat_conf",
+    "name":"wx_conf",
     "version": "1.0.0",
     "title": "初始化微信JS SDK",
     "desc":"初始化微信JS SDK",

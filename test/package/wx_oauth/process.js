@@ -11,7 +11,7 @@ var handler = function(scope) {
     }else{
         var tmp = window.location.href.replace('http://','');
         tmp = tmp.replace('https://','');
-        this.__ajax.get("/endpoint/wechat_oauth", {
+        this.__ajax.get("/endpoint/wx_oauth", {
             "scope": scope,
             "callback": tmp,
         }, function(err, data) {

@@ -1,7 +1,7 @@
 /* process request results */
 var handler = function(api) {
     var defer = $.Deferred();
-    this.__ajax.get("/endpoint/wechat_conf", {
+    this.__ajax.get("/endpoint/wx_conf", {
         "u": window.location.href,
         "api_list": api,
     }, function(err, data) {

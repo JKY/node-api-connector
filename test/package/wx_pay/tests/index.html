@@ -13,9 +13,9 @@
 <body>
     <script>
     mkit.ready('1234', function(api) {
-        api.wechat_conf(['chooseWXPay']).then(function(r) {
+        api.wx_conf(['chooseWXPay']).then(function(r) {
             console.log(r);
-            api.wechat_pay(1, 'oYsritwiTu0M6VkK8wlx29uo05sI', 'foo').then(function(r) {
+            api.wx_pay(1, 'oYsritwiTu0M6VkK8wlx29uo05sI', 'foo').then(function(r) {
                 console.log(r);
             });
         });

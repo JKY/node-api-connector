@@ -1,7 +1,7 @@
 /* process request results */
 var handler = function(amount,openid,desc) {
     var defer = $.Deferred();
-    this.__ajax.get("/endpoint/wechat_pay", {
+    this.__ajax.get("/endpoint/wx_pay", {
         "amount": amount,
         "openid": openid,
         "desc": desc,

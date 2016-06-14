@@ -1,8 +1,8 @@
 {
-    "name":"wechat_oauth",
+    "name":"wx_pay",
     "version": "1.0.0",
-    "title": "微信授权",
-    "desc":"获取微信用户信息",
+    "title": "微信支付",
+    "desc":"使用微信支付",
     "icon": "",
     "author": "",
     "homepage": "",
@@ -12,16 +12,19 @@
             "conf": {}
          },
         "method":"get",
-        "url":"http://wx.postio.me/oauth",
+        "url":"http://wx.postio.me/pay/prepay",
         "param": {
             "appid":{
                 "type":"string",
                 "ref" : "user.wx.appid"
              },
-            "scope": {
+            "amount": {
+                "type":"number"
+             },
+            "openid": {
                 "type":"string"
              },
-            "callback": {
+            "desc": {
                 "type":"string"
              }
         },

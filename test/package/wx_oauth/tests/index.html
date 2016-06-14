@@ -1,7 +1,7 @@
 <html>
   <head>
     <title> </title>
-    <link href="/favicon.ico" type="image/x-icon"  rel="Shortcut Icon">
+    <link href="/favicon.ico" rel="Shortcut Icon">
     <meta name="viewport" content="minimal-ui,width=device-width, initial-scale=1,maximum-scale=1"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -11,9 +11,9 @@
   <body>
     <script>
       mkit.ready('1234',function(api){
-      	api.wechat_conf(['onMenuShareTimeline','onMenuShareAppMessage','chooseWXPay']).then(function(r){
-      		console.log(r);
-      	});
+        api.wx_oauth().then(function(r){
+            console.log(r);
+        });
       });
     </script>
   </body>
