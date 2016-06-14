@@ -79,7 +79,7 @@ var __send_req = function(req, data, key, callback, cert) {
                 //console.log('error:'+err);
                 //console.log(response);
                 //console.log(body);
-                callback(null, response['statusCode'], null);
+                callback(err || 'error', response['statusCode'], null);
             }
         } else {
             console.log('----- request err -----');
@@ -138,16 +138,25 @@ module.exports = function(router, req, resp, next, opt) {
         var appid = matches[1];
         var name = matches[2];
         var MAP = api_factory(opt);
+        var IP = ip(req);
         req['headers']['mkit_appid'] = appid;
         req['headers']['mkit_apiname'] = name;
-        req['headers']['mkit_ip'] = ip(req);
+        req['headers']['mkit_ip'] = IP;
         if (MAP[name]) {
             var context = {
                 appid: appid
             };
             __proxy(MAP[name], req, resp, context, opt, function(err, code, body) {
-                console.log('########'.yellow);
-                out(resp, 200, body);
+                if(code == 200){
+                    //console.log('########'.yellow);
+                    out(resp, 200, body);
+                    if(opt.api.called){
+                        opt.api.called(appid,name,IP,req['heads']['Referer']);
+                    };
+                }else{
+                    out(resp, 500, 'internal error');
+                    // TODO
+                }
             });
         } else {
             console.log(('endpoint undefined:' + name).red);

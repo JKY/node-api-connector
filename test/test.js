@@ -47,6 +47,10 @@ var g = new guard({
                 console.log(data);
                 callback(null,null);
             }
+        },
+
+        called: function(appid,apiname,ip,refer){
+            //TODO
         }
     },
 
