@@ -18,7 +18,7 @@ module.exports = function(router, req, resp, next, opt) {
             icon: item['icon'],
             conf: item['endpoint']['app']['conf']
         };
-        out(resp, 200, content, JSON.stringify({
+        out(resp, 200, JSON.stringify({
             'err': null,
             'result': result
         }, null, 4));
