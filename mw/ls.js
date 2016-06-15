@@ -15,7 +15,8 @@ module.exports = function(router,req,resp, next, opt){
             author: a['author'],
             homepage: a['homepage'],
             title: a['title'],
-            cost: a['cost']
+            cost: a['cost'],
+            data: a['endpoint']['data']
         })
     };
     out(resp, 200, JSON.stringify(result, null, 4));

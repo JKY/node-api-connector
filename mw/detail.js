@@ -16,7 +16,8 @@ module.exports = function(router, req, resp, next, opt) {
             desc: item['desc'],
             cost: item['cost'],
             icon: item['icon'],
-            conf: item['endpoint']['app']['conf']
+            conf: item['endpoint']['app']['conf'],
+            data: item['endpoint']['data']
         };
         out(resp, 200, JSON.stringify({
             'err': null,

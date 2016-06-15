@@ -45,7 +45,12 @@
             "handler": "process.js"
          },
         "data":{
-            
+            "icon":"",
+            "title":"",
+            "schema": {
+                "name":"string",
+                "age" :"number"
+            }
          }
     }
 }

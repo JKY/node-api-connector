@@ -55,6 +55,7 @@ exports.guard = function(opt) {
         for (var key in ROUTER) {
             var rex = ROUTER[key]['path'];
             if (req['url'].match(rex)) {
+                console.log('[node-api-connector] handle: ' + req['url']);
                 return ROUTER[key]['handler'](rex, req, resp, next, opt);
             }
         };
