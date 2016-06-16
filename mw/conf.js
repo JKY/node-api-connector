@@ -56,6 +56,7 @@ var __update_conf = function(opt, uid, appid, apiname, conf, fields, files, call
 
         }
     };
+    console.log(conf);
     callback(null, conf);
 };
 
@@ -75,9 +76,12 @@ module.exports = function(router, req, resp,next, opt) {
         } else if (req['method'].toLowerCase() == 'post') {
             /* set*/
             parse_form(req, resp, function(fileds, files) {
-                __update_conf(opt, uid, appid, apiname, conf, fileds, files, function(err, result) {
-                    out(resp, 200, JSON.stringify(result));
-                });
+                console.log('======= conf =======');
+                console.log(fileds);
+                console.log(files);
+                //__update_conf(opt, uid, appid, apiname, conf, fileds, files, function(err, result) {
+                //    out(resp, 200, JSON.stringify(result));
+                //});
             });
         }
     } else {

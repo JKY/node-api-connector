@@ -9,7 +9,50 @@
     "cost":0,
     "endpoint": {
         "app":{
-            "conf": {}
+            "conf": {
+                "foo": {
+                    "title": "测试标题字段1",
+                    "desc" : "测试标题字段",
+                    "type" : "string"
+                },
+                "foo1": {
+                    "title": "测试标题字段2",
+                    "desc" : "测试标题字段2",
+                    "type" : "number"
+                },
+                "foo3": {
+                    "title": "测试标题字段3",
+                    "desc" : "测试标题字段3",
+                    "type" : "file"
+                },
+                "foo4": {
+                    "title": "测试标题字段4",
+                    "desc" : "测试标题字段4",
+                    "type" : "bool"
+                },
+                "foo5": {
+                    "title": "测试标题字段5",
+                    "desc" : "测试标题字段5",
+                    "type" : "list",
+                    "entry":{
+                        "name": {
+                                "title": "名称",
+                                "desc" : "名称描述",
+                                "type" : "string"
+                         },
+                        "age": {
+                                "title": "年龄",
+                                "desc" : "名称描述",
+                                "type" : "number"
+                         },
+                        "sex": {
+                                "title": "姓名",
+                                "desc" : "名称描述",
+                                "type" : "number"
+                         }
+                    }
+                }
+            }
          },
         "method":"get",
         "url":"http://localhost:8889/save",

@@ -10,23 +10,50 @@ usage
 	
 2. 添加到 express 
 		
-		var opt = {
-			PACKAGE_HOME: __dirname + '/package',
-			/* api 配置 */
-			api: {
-				use: function(appid,callback){
-					callback(null,{
-						'wechat_conf': {}
-				});
-			}
-		},
-		/* 获取配置 */
-		common_conf:function(appid, config,callback){
-			config['appid'] = 'wx50d746e9d0f0af1d';
-			callback(null,config);
-		}};
 		
-		var g = new guard(opt);
+		var g = new guard({
+		    PACKAGE_HOME: __dirname + '/package',
+		    /* api 配置 */
+		    api: {
+		        use: function(appid, callback) {
+		            callback(null, {
+		                'store': true,
+		                'wx_conf': true,
+		                'wx_oauth': true,
+		                'wx_pay': true
+		            });
+		        },
+
+		        conf: {
+		            get: function(appid, config, callback) {
+		                for(var key in config){
+		                    if(key == 'appid'){
+		                         config['appid'] = 'wx50d746e9d0f0af1d';//'wx22fb445469f289a2';
+		                    }
+		                }
+		                callback(null, config);
+		            }
+		        },
+
+		        data: {
+		            save: function(appid, apiname, data,callback){
+		                console.log('==== data ====');
+		                console.log(appid + ':' + apiname);
+		                console.log(data);
+		                callback(null,null);
+		            }
+		        },
+
+		        called: function(appid,apiname,ip,refer){
+		            //TODO
+		        }
+		    },
+
+		    /* 保存API返回数据*/
+		    data: function(appid,apiname,data,callback){
+		        callback(null);
+		    }
+		});
 		app.use(g.proxy);
 		
 		
@@ -117,6 +144,7 @@ endpoints
 
 
 
+
 - #### 获取某个 API markdown doc ####
 
 	endpoint:  /api/{apiname}/doc  
@@ -127,3 +155,39 @@ endpoints
 		获取某个 API markdown content  
 	测试:   
 		http://localhost:8000/api/wechat_conf/doc  
+
+
+
+
+- #### 获取某个 API 配置 ####
+
+	endpoint:  /{uid}/{appid}/{apiname}/conf
+	方法: GET
+	验证: none  
+	参数:   
+		uid:  必填  
+		appid:  必填  
+		apiname:  必填  
+	说明:   
+		获取某个 API 配置   
+	测试:   
+		http://localhost:8000/uid/appid/store/conf  
+
+
+
+
+- #### 更新某个 API 配置 ####
+
+	endpoint:  /{uid}/{appid}/{apiname}/conf
+	方法: POST
+	验证: none  
+	参数:   
+		uid:  必填  
+		appid:  必填  
+		apiname:  必填  
+	说明:   
+		更新配置到 API, 通过form key value提交, key 的约定形式见文档;
+
+
+
+
