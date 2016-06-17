@@ -77,7 +77,9 @@ module.exports = function(router, req, resp,next, opt) {
             /* set*/
             parse_form(req, resp, function(fileds, files) {
                 console.log('======= conf =======');
+                console.log('fileds:');
                 console.log(fileds);
+                console.log('files:');
                 console.log(files);
                 //__update_conf(opt, uid, appid, apiname, conf, fileds, files, function(err, result) {
                 //    out(resp, 200, JSON.stringify(result));

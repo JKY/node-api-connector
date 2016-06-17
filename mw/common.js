@@ -87,7 +87,8 @@ exports.parse_form = function(req, resp, func) {
     };
     form.parse(req, function(err, fileds, files) {
         if (err !== null) {
-            sys.log(("pare form error:" + err).red);
+            console.log(("pare form error:" + err).red);
+            console.log(err);
             return;
         } else {
             func(fileds, files);
