@@ -81,6 +81,13 @@ module.exports = function(router, req, resp,next, opt) {
                 console.log(fileds);
                 console.log('files:');
                 console.log(files);
+                out(resp, 200, JSON.stringify({
+                    'err':null,
+                    'result': {
+                        'success':true,
+                        'conf': null
+                     }
+                }));
                 //__update_conf(opt, uid, appid, apiname, conf, fileds, files, function(err, result) {
                 //    out(resp, 200, JSON.stringify(result));
                 //});
