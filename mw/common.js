@@ -27,7 +27,7 @@ var package = exports.package = {
                         var tmp = fs.readFileSync(path, { encoding: 'utf8' });
                         m['linked'] = link(3, tmp);
                         result[m['name']] = m;
-                        console.log(('loaded [' + m['name'] + ']').green);
+                        //console.log(('loaded [' + m['name'] + ']').green);
                     } catch (e) {
                         console.log(manifest + ' not found'.red);
                         console.log(e);

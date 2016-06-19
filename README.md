@@ -72,7 +72,7 @@ endpoints
 
 - #### 前端页面的 js 库 ####
 
-	endpoint: /api.js  
+	endpoint: /mkit.js  
 	method: GET  
 	验证: none  
 	参数:   
@@ -80,7 +80,7 @@ endpoints
 	说明:   
 		前端 js 类库  
 	测试:   
-		http://localhost:8000/api.js  
+		http://localhost:8000/mkit.js  
 
 
 
@@ -102,7 +102,7 @@ endpoints
 
 - #### 前端页面函数库掉用的接口地址 ####
 
-	endpoint: /{appid}/endpoint/{wechat_conf}  
+	endpoint: /{appid}/endpoint/{wx_conf}  
 	method: GET  
 	验证: none  
 	参数: 
@@ -111,7 +111,7 @@ endpoints
 		不同 API 接口被前端调用的中间地址, 服务器根据此地址转发到真正的  
 		地址 (manifest.json 文件中)上  
 	测试:  
-		http://localhost:8000/foo/endpoint/wechat_conf  
+		http://localhost:8000/foo/endpoint/wx_conf  
 
 
 

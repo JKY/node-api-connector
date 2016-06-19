@@ -68,9 +68,9 @@ var __send_req = function(req, data, key, callback, cert) {
     request(q, function(err, response, body) {
         if (!err && response) {
             if(response['statusCode'] == 200){
-                 console.log(req.url.yellow + ' ' + response['statusCode'].toString().green);
+                 //console.log(req.url.yellow + ' ' + response['statusCode'].toString().green);
             }else{
-                 console.log(req.url.yellow + ' ' + response['statusCode'].toString().red);
+                 //console.log(req.url.yellow + ' ' + response['statusCode'].toString().red);
             };
             if (!err && response && response['statusCode'] == 200) {
                 callback(null, response['statusCode'], body);
@@ -92,7 +92,7 @@ var __send_req = function(req, data, key, callback, cert) {
 
 /* proxy http request */
 var __proxy = function(endpoint, req, resp, context, opt, callback) {
-    console.log((' >>> ' + req['url']).yellow);
+    //console.log((' >>> ' + req['url']).yellow);
     var config = {};
     for (var key in endpoint['endpoint']['param']) {
         var arg = endpoint['endpoint']['param'][key];
